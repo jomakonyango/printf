@@ -1,6 +1,13 @@
 #include "main.h"
 #include <stdio.h>
 
+/* Helper function to convert an unsigned int to binary and print it */
+void print_binary(unsigned int n)
+{
+if (n > 1)
+print_binary(n / 2);
+putchar((n % 2) + '0');
+}
 /* Helper function to handle %c, %s, and %d specifiers */
 int handle_specifier(int c, va_list args)
 {
