@@ -1,44 +1,59 @@
-#include <limits.h>
-#include <stdio.h>
+#include <stdarg.h>
 #include "main.h"
 
 /**
-* main - Entry point
+* _printf - produces output according to a format
+* @format: character string composed of zero or more directives
 *
-* Return: Always 0
+* Return: the number of characters printed (excluding the null byte
+* used to end output to strings)
 */
-int main(void)
+int _printf(const char *format, ...)
 {
-int len;
-int len2;
-unsigned int ui;
-void *addr;
+va_list args;
+int count = 0;
 
-len = _printf("Let's try to printf a simple sentence.\n");
-len2 = printf("Let's try to printf a simple sentence.\n");
-ui = (unsigned int)INT_MAX + 1024;
-addr = (void *)0x7ffe637541f0;
-_printf("Length:[%d, %i]\n", len, len);
-printf("Length:[%d, %i]\n", len2, len2);
-_printf("Negative:[%d]\n", -762534);
-printf("Negative:[%d]\n", -762534);
-_printf("Unsigned:[%u]\n", ui);
-printf("Unsigned:[%u]\n", ui);
-_printf("Unsigned octal:[%o]\n", ui);
-printf("Unsigned octal:[%o]\n", ui);
-_printf("Unsigned hexadecimal:[%x, %X]\n", ui, ui);
-printf("Unsigned hexadecimal:[%x, %X]\n", ui, ui);
-_printf("Character:[%c]\n", 'H');
-printf("Character:[%c]\n", 'H');
-_printf("String:[%s]\n", "I am a string !");
-printf("String:[%s]\n", "I am a string !");
-_printf("Address:[%p]\n", addr);
-printf("Address:[%p]\n", addr);
-len = _printf("Percent:[%%]\n");
-len2 = printf("Percent:[%%]\n");
-_printf("Len:[%d]\n", len);
-printf("Len:[%d]\n", len2);
-_printf("Unknown:[%r]\n");
-printf("Unknown:[%r]\n");
-return (0);
+va_start(args, format);
+
+for (int i = 0; format[i]; i++)
+{
+if (format[i] != '%')
+{
+_putchar(format[i]);
+count++;
 }
+else
+{
+i++;
+switch (format[i])
+{
+case 'c':
+_putchar(va_arg(args, int));
+count++;
+break;
+case 's':
+char *str = va_arg(args, char *);
+for (int j = 0; str[j]; j++)
+{
+_putchar(str[j]);
+count++;
+}
+break;
+case '%':
+_putchar('%');
+count++;
+break;
+default:
+_putchar('%');
+_putchar(format[i]);
+count += 2;
+break;
+}
+}
+}
+
+va_end(args);
+
+return (count);
+}
+
