@@ -2,49 +2,42 @@
 #include <unistd.h>
 #include "main.h"
 
+/* Other function definitions... */
+
 /**
- * print_char - Prints a character
- * @args: List of arguments
- * @count: Pointer to the count of characters
- */
-void print_char(va_list args, int *count)
+* handle_format - Handles the format specifiers for _printf
+* @traverse: Pointer to the current character in the format string
+* @args: The list of arguments
+* @count: Pointer to the count of characters
+*/
+void handle_format(const char *traverse, va_list args, int *count)
 {
-char c = va_arg(args, int);
-write(1, &c, 1);
-(*count)++;
+switch (*traverse)
+{
+case 'c':
+print_char(args, count);
+break;
+case 's':
+print_string(args, count);
+break;
+case '%':
+print_percent(count);
+break;
+case 'b':
+print_binary(args, count);
+break;
+case 'd':
+case 'i':
+print_int(args, count);
+break;
+}
 }
 
 /**
- * print_string - Prints a string
- * @args: List of arguments
- * @count: Pointer to the count of characters
- */
-void print_string(va_list args, int *count)
-{
-char *str = va_arg(args, char *);
-while (*str != '\0')
-{
-write(1, str, 1);
-str++;
-(*count)++;
-}
-}
-
-/**
- * print_percent - Prints a percent symbol
- * @count: Pointer to the count of characters
- */
-void print_percent(int *count)
-{
-write(1, "%", 1);
-(*count)++;
-}
-
-/**
-* _printf - a function that produces output according to a format
-* @format: character string composed of zero or more directives
+* _printf - A function that produces output according to a format
+* @format: Character string composed of zero or more directives
 *
-* Return: the number of characters printed (excluding the null byte)
+* Return: The number of characters printed (excluding the null byte)
 */
 int _printf(const char *format, ...)
 {
@@ -52,31 +45,34 @@ va_list args;
 int count = 0;
 const char *traverse;
 
+/* Initialize the argument list */
 va_start(args, format);
+
+/* Iterate over the format string */
 for (traverse = format; *traverse != '\0'; traverse++)
 {
+/* Print characters until a '%' or end of string is found */
 while (*traverse != '%' && *traverse != '\0')
 {
 write(1, traverse, 1);
 traverse++;
 count++;
 }
+
+/* If end of string is reached, break the loop */
 if (*traverse == '\0')
 break;
-traverse++;  /* skip the '%' */
-switch (*traverse)
-{
-case 'c':
-print_char(args, &count);
-break;
-case 's':
-print_string(args, &count);
-break;
-case '%':
-print_percent(&count);
-break;
+
+/* Skip the '%' */
+traverse++;
+
+/* Handle the conversion specifier */
+handle_format(traverse, args, &count);
 }
-}
+
+/* Clean up the argument list */
 va_end(args);
+
+/* Return the count of characters printed */
 return (count);
 }
